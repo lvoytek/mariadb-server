@@ -8614,12 +8614,13 @@ static void execute_replay_queries(const char *sql_script, DYNAMIC_STRING *ds)
         log_replay_query(query_start, query_len);
         
         /* Execute the query */
-        if (mysql_real_query(replay_server_mysql, query_start, query_len))
+        if (mysql_real_query(replay_server_mysql, query_start,
+                             (ulong) query_len))
         {
           char buf[512];
-          int len= my_snprintf(buf, sizeof(buf),
-                               "ReplayTest: Query error: %s\n",
-                               mysql_error(replay_server_mysql));
+          size_t len=
+              my_snprintf(buf, sizeof(buf), "ReplayTest: Query error: %s\n",
+                          mysql_error(replay_server_mysql));
           fputs(buf, stdout);
           print_replay_test_location(stdout);
           verbose_msg("%s", buf);
@@ -8664,9 +8665,9 @@ static void execute_replay_queries(const char *sql_script, DYNAMIC_STRING *ds)
           if (mysql_errno(replay_server_mysql))
           {
             char buf[512];
-            int len= my_snprintf(buf, sizeof(buf),
-                                 "ReplayTest: Query error: %s\n",
-                                 mysql_error(replay_server_mysql));
+            size_t len=
+                my_snprintf(buf, sizeof(buf), "ReplayTest: Query error: %s\n",
+                            mysql_error(replay_server_mysql));
             fputs(buf, stdout);
             if (is_explain)
               dynstr_append_mem(&result, buf, len);
@@ -8722,8 +8723,9 @@ static void execute_replay_queries(const char *sql_script, DYNAMIC_STRING *ds)
       
       /* Log the query */
       log_replay_query(query_start, query_len);
-      
-      if (mysql_real_query(replay_server_mysql, query_start, query_len))
+
+      if (mysql_real_query(replay_server_mysql, query_start,
+                           (ulong) query_len))
       {
         fprintf(stdout, "ReplayTest: Query failed on replay server: %d %s\n",
                 mysql_errno(replay_server_mysql),
@@ -8836,10 +8838,10 @@ static void run_explain_directly_on_replay(const char *query, size_t query_len,
   if (mysql_real_query(replay_server_mysql, query, (ulong)query_len))
   {
     char buf[512];
-    int len= my_snprintf(buf, sizeof(buf),
-                         "ReplayTest: Direct EXPLAIN failed on replay server: %d %s\n",
-                         mysql_errno(replay_server_mysql),
-                         mysql_error(replay_server_mysql));
+    size_t len= my_snprintf(
+        buf, sizeof(buf),
+        "ReplayTest: Direct EXPLAIN failed on replay server: %d %s\n",
+        mysql_errno(replay_server_mysql), mysql_error(replay_server_mysql));
     fputs(buf, stdout);
     fprintf(stdout, "ReplayTest: Failed query was: %.*s\n",
             (int)query_len, query);

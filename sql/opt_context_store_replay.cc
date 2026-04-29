@@ -156,6 +156,7 @@ public:
 
 namespace Show
 {
+extern ST_FIELD_INFO optimizer_costs_fields_info[];
 
 ST_FIELD_INFO optimizer_context_capture_info[]= {
     Column("QUERY", Longtext(65535), NOT_NULL),
@@ -408,6 +409,50 @@ static bool is_optimizer_related_var(const char **sys_vars,
   return false;
 }
 
+static void store_optimizer_costs(const char *engine,
+                                  const OPTIMIZER_COSTS *costs,
+                                  String &sql_script)
+{
+  char buf[64];
+  for (uint i= 0; Show::optimizer_costs_fields_info[i + 1].name(); i++)
+  {
+    String var_name;
+    double cost_val= ((double *) costs)[i];
+    const ST_FIELD_INFO *field_info= &Show::optimizer_costs_fields_info[i + 1];
+
+    sql_script.append(STRING_WITH_LEN("SET "));
+    sql_script.append(STRING_WITH_LEN("GLOBAL "));
+
+    var_name.append(engine, strlen(engine));
+    var_name.append(STRING_WITH_LEN("."));
+    var_name.append(field_info->name());
+
+    sql_script.append(var_name);
+    sql_script.append(STRING_WITH_LEN("="));
+
+    if (strcmp(field_info->name().str, "OPTIMIZER_DISK_READ_RATIO") != 0)
+      cost_val= ((double *) costs)[i] * 1000.0;
+
+    size_t len= my_snprintf(buf, sizeof(buf), "%-.11lg", cost_val);
+    sql_script.append(buf, len);
+    sql_script.append(STRING_WITH_LEN(";\n\n"));
+  }
+}
+
+static my_bool store_engine_costs_callback(THD *thd, plugin_ref plugin,
+                                           void *arg)
+{
+  String *sql_script= (String *) arg;
+  handlerton *hton= plugin_hton(plugin);
+  if (hton->optimizer_costs)
+  {
+    store_optimizer_costs(plugin_name(plugin)->str,
+                          (OPTIMIZER_COSTS *) hton->optimizer_costs,
+                          *sql_script);
+  }
+  return 0;
+}
+
 /*
   @brief
     Save current values of optimizer variables: append to sql_script
@@ -427,6 +472,14 @@ static void store_system_variables(THD *thd, String &sql_script)
   size_t len;
   StringBuffer<1024> buf;
   const char *pos;
+
+  // store all plugin-engines optimizer cost values
+  plugin_foreach_with_mask(thd, store_engine_costs_callback,
+                           MYSQL_STORAGE_ENGINE_PLUGIN, PLUGIN_IS_READY,
+                           &sql_script);
+  store_optimizer_costs("heap", &heap_optimizer_costs, sql_script);
+  store_optimizer_costs("temp_table", &tmp_table_optimizer_costs, sql_script);
+
   for (SHOW_VAR *show_var= all_session_vars; show_var->name != NULL;
        show_var++)
   {
