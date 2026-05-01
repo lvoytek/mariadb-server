@@ -1,0 +1,17 @@
+# Test case for MDEV-38839
+# Assertion `(thd->state_flags & Open_tables_state::BACKUPS_AVAIL) ||
+# !thd->has_pending_row_events()' failed in close_thread_tables
+# on CREATE TABLE ... SELECT * FROM temp_table FOR UPDATE in MIXED binlog mode
+
+--source include/have_log_bin.inc
+--source include/have_binlog_format_mixed.inc
+
+SET sql_mode='';
+CREATE TEMPORARY TABLE t ENGINE=MyISAM AS SELECT @a AS c;
+INSERT INTO t VALUES (0xABB0);
+SET autocommit=OFF;
+--error ER_DUP_ENTRY
+CREATE TABLE t (c INT PRIMARY KEY) ENGINE=MyISAM SELECT * FROM t FOR UPDATE;
+SET autocommit=ON;
+DROP TEMPORARY TABLE IF EXISTS t;
+DROP TABLE IF EXISTS t;

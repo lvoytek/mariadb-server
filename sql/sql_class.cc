@@ -7130,7 +7130,7 @@ int THD::decide_logging_format(TABLE_LIST *tables)
         }
       }
 
-      if (tbl->lock_type >= TL_FIRST_WRITE)
+      if (tbl->updating || tbl->sequence)
       {
         bool trans;
         if (prev_write_table && prev_write_table->file->ht !=
@@ -7147,12 +7147,29 @@ int THD::decide_logging_format(TABLE_LIST *tables)
 
         trans= table->file->has_transactions();
 
-        if (share->tmp_table)
-          lex->set_stmt_accessed_table(trans ? LEX::STMT_WRITES_TEMP_TRANS_TABLE :
-                                               LEX::STMT_WRITES_TEMP_NON_TRANS_TABLE);
-        else
-          lex->set_stmt_accessed_table(trans ? LEX::STMT_WRITES_TRANS_TABLE :
-                                               LEX::STMT_WRITES_NON_TRANS_TABLE);
+        /*
+          For SELECT ... FOR UPDATE, tbl->updating is false because the
+          table is only locked for reading, not actually being modified.
+          MyISAM has no row-level locking so FOR UPDATE escalates to
+          TL_WRITE, but this does not mean the table is being written to.
+          Sequences are an exception: even though tbl->updating is false
+          for SELECT NEXT VALUE FOR s, the sequence table is genuinely
+          modified internally, which is indicated by tbl->sequence.
+          Only set the write flag when the table is actually being written
+          to (tbl->updating) or is a sequence (tbl->sequence), to avoid
+          incorrectly setting MODIFIED_NON_TRANS_TABLE which would block
+          binlog_truncate_trx_cache() in MIXED mode and cause an assertion
+          in close_thread_tables().
+        */
+        // if (tbl->updating || tbl->sequence)
+        // {
+          if (share->tmp_table)
+            lex->set_stmt_accessed_table(trans ? LEX::STMT_WRITES_TEMP_TRANS_TABLE :
+                                                 LEX::STMT_WRITES_TEMP_NON_TRANS_TABLE);
+          else
+            lex->set_stmt_accessed_table(trans ? LEX::STMT_WRITES_TRANS_TABLE :
+                                                 LEX::STMT_WRITES_NON_TRANS_TABLE);
+        // }
 
         flags_write_all_set &= flags;
         flags_write_some_set |= flags;
