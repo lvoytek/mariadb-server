@@ -70,6 +70,7 @@
 #include "derived_handler.h"
 #include "opt_hints.h"
 #include "opt_group_by_cardinality.h"
+#include "sql_parallel_workers.h"
 
 /*
   A key part number that means we're using a fulltext scan.
@@ -4902,6 +4903,8 @@ bool JOIN::save_explain_data(Explain_query *output, bool can_overwrite,
 int JOIN::exec()
 {
   int res;
+  pwt_management pwt;
+
   DBUG_ASSERT(optimization_state == OPTIMIZATION_DONE);
   DBUG_EXECUTE_IF("show_explain_probe_join_exec_start", 
                   if (dbug_user_var_equals_int(thd, 
@@ -4909,13 +4912,22 @@ int JOIN::exec()
                                                select_lex->select_number))
                         dbug_serve_apcs(thd, 1);
                  );
+
+  // If we are a top level select statement
+  if (!select_lex->outer_select() && thd->lex->sql_command == SQLCOM_SELECT &&
+      !pwt.init_parallel_workers(thd))
+    return 1;
+
   ANALYZE_START_TRACKING(thd, &explain->time_tracker);
   res= exec_inner();
   ANALYZE_STOP_TRACKING(thd, &explain->time_tracker);
 
-  DBUG_EXECUTE_IF("show_explain_probe_join_exec_end", 
-                  if (dbug_user_var_equals_int(thd, 
-                                               "show_explain_probe_select_id", 
+  if (pwt.workers)
+    pwt.join_parallel_workers(thd);
+
+  DBUG_EXECUTE_IF("show_explain_probe_join_exec_end",
+                  if (dbug_user_var_equals_int(thd,
+                                               "show_explain_probe_select_id",
                                                select_lex->select_number))
                         dbug_serve_apcs(thd, 1);
                  );
