@@ -1582,17 +1582,20 @@ int json_find_path(json_engine_t *je,
     case JST_OBJ_END:
       do
       {
+        json_path_step_t *cur;
+        const int *value_ptr;
+        int value;
         (*p_cur_step)--;
 
         if (*p_cur_step <= initial_step)
           break;
 
-        json_path_step_t *cur = *p_cur_step;
+        cur= *p_cur_step;
 
-        const int *value_ptr =
-        (const int*)array_counters->buffer + (cur - initial_step);
+        value_ptr=
+          (const int*)array_counters->buffer + (cur - initial_step);
 
-        int value = *value_ptr;
+        value= *value_ptr;
 
         if (value != SKIPPED_STEP_MARK)
           break;
@@ -1603,7 +1606,7 @@ int json_find_path(json_engine_t *je,
     case JST_ARRAY_END:
       if (*p_cur_step > initial_step)
         (*p_cur_step)--;
-        break;
+      break;
     default:
       DBUG_ASSERT(0);
       break;
