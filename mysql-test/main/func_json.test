@@ -1227,6 +1227,12 @@ FROM JSON_TABLE (@data, '$[*]' COLUMNS (data text PATH '$.Data')) AS t;
 select null<=>json_extract('1',json_object(null,'{ }',null,null),'{}');
 
 --echo #
+--echo # MDEV-39213: json range syntax crash
+--echo #
+
+SELECT JSON_EXISTS(CONCAT('[', REPEAT('[', 4000), 'Y', REPEAT(']', 4000), ', 1]'), '$[100]');
+
+--echo #
 --echo # MDEV-35548 UBSAN: runtime error: index -1 out of bounds for type 'json_path_step_t[32]'
 --echo # (aka 'struct st_json_path_step_t[32]')
 --echo #
