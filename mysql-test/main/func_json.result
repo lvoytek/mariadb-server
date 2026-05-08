@@ -1776,8 +1776,8 @@ Warning	4042	Syntax error in JSON path in argument 2 to function 'json_extract' 
 #
 # MDEV-39213: json range syntax crash
 #
-SELECT JSON_EXISTS(CONCAT('[', REPEAT('[', 4000), 'Y', REPEAT(']', 4000), ', 1]'), '$[100]');
-JSON_EXISTS(CONCAT('[', REPEAT('[', 4000), 'Y', REPEAT(']', 4000), ', 1]'), '$[100]')
+SELECT JSON_EXISTS(CONCAT('[', REPEAT('[', 4000), 'Y', REPEAT(']', 4000), ', 1]'), '$[100]') as ex;
+ex
 NULL
 #
 # MDEV-35548 UBSAN: runtime error: index -1 out of bounds for type 'json_path_step_t[32]'
