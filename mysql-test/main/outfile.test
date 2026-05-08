@@ -131,6 +131,3 @@ connection default;
 drop user u@localhost;
 
 --echo # End of 10.6 tests
-
-# Wait till we reached the initial number of concurrent sessions
---source include/wait_until_count_sessions.inc
