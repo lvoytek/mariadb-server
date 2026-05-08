@@ -5725,7 +5725,8 @@ static int init_server_components()
   prctl(PR_SET_THP_DISABLE, 1, 0, 0, 0);
 #endif
 
-  ft_init_stopwords();
+  if (!opt_syntax_checker)
+    ft_init_stopwords();
 
   init_max_user_conn();
   init_global_user_stats();
@@ -6007,7 +6008,8 @@ int mysqld_main(int argc, char **argv)
     We have enough space for fiddling with the argv, continue
   */
   check_data_home(mysql_real_data_home);
-  if (my_setwd(mysql_real_data_home, opt_abort ? 0 : MYF(MY_WME)) && !opt_abort)
+  if (my_setwd(mysql_real_data_home, (opt_abort || opt_syntax_checker) ?
+                0 : MYF(MY_WME)) && !opt_abort  && !opt_syntax_checker)
     unireg_abort(1);				/* purecov: inspected */
 
   /* Atomic write initialization must be done as root */

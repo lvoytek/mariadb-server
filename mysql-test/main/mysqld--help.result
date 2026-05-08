@@ -191,6 +191,7 @@ The following specify which files/extra groups are read (specified before remain
  Set the default character set
  --character-sets-dir=name 
  Directory where character sets are
+ --check-syntax      Check syntax of queries on stdin
  -r, --chroot=name   Chroot mariadbd process during startup
  --collation-server=name 
  Set the default collation
@@ -1700,6 +1701,7 @@ character-set-client-handshake TRUE
 character-set-collations utf8mb3=uca1400_ai_ci,utf8mb4=uca1400_ai_ci,ucs2=uca1400_ai_ci,utf16=uca1400_ai_ci,utf32=uca1400_ai_ci
 character-set-filesystem binary
 character-sets-dir MYSQL_CHARSETSDIR/
+check-syntax FALSE
 chroot (No default value)
 column-compression-threshold 100
 column-compression-zlib-level 6

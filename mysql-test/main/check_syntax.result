@@ -1,13 +1,30 @@
-Line:     18  Query: 'foo'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'foo
+Line:     82  Query: 'foo'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'foo
 ' at line 1' (1064)
-Line:     19  Query: 'foo2'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'foo2
+Line:     83  Query: 'foo2'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'foo2
 ' at line 1' (1064)
-Line:     20  Query: 'select */ +1'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '/ +1
+Line:     84  Query: 'select */ +1'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '/ +1
 ' at line 1' (1064)
-Line:     21  Query: 'select '1;
+Line:     85  Query: 'select '1;
 '+'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
-Line:     23  Query: 'select 1+'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
-Line:     25  Query: 'select 3+ '  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
+Line:     87  Query: 'select 1+'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
+Line:     89  Query: 'select 3+ '  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
+Line:     91  Query: 'SELECT 1 /*! +1 '  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
+Line:     92  Query: '*/'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '*/
+' at line 1' (1064)
+Line:     92  Query: 'SELECT 2 /*M! +1 '  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
+Line:     93  Query: '*/'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '*/
+' at line 1' (1064)
+Line:     95  Query: 'CREATE OR REPLACE TABLE'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
+Line:     96  Query: 'CREATE TABLE IF NOT EXISTS'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
+Line:     97  Query: 'CREATE TABLE t (c DUMMY_TYPE)'  Error 'Unknown data type: 'DUMMY_TYPE'' (4161)
+Line:     98  Query: 'INSERT INTO t VALUES'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
+Line:    100  Query: 'ALTER TABLE t MODIFY COLUMN c DUMMY_TYPE'  Error 'Unknown data type: 'DUMMY_TYPE'' (4161)
+Line:    101  Query: 'DROP TABLE'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
+Line:    104  Query: 'SELECT * FROM'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
+Line:    105  Query: 'UPDATE t SET'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
+Line:    106  Query: 'DELETE TABLE'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near 'TABLE
+' at line 1' (1064)
+Line:    107  Query: 'TRUNCATE TABLE'  Error 'You have an error in your SQL syntax; check the manual that corresponds to your MariaDB server version for the right syntax to use near '' at line 2' (1064)
 #
 # Check DELIMITER
 #

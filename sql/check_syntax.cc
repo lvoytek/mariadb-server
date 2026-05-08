@@ -206,6 +206,17 @@ static bool get_query(THD *thd, MYSQL_FILE *file, String *query)
         /* No active comment or quote */
         if (pos[0] == '/' && pos[1] == '*')
         {
+          /* executable comment */
+          if (pos + 2 < end && pos[2] == '!')
+          {
+            pos+= 3;
+            continue;
+          }
+          if (pos + 3 < end && pos[2] == 'M' && pos[3] == '!')
+          {
+            pos+= 4;
+            continue;
+          }
           in_comment= 1;
           pos+= 2;
           continue;
@@ -347,12 +358,20 @@ bool syntax_checker(MYSQL_FILE *file)
   bool error= 0;
   THD thd(next_thread_id());
   plugin_parser_error_handler err_handler;
+  const LEX_CSTRING dummy_db= { STRING_WITH_LEN("test") };
   DBUG_ENTER("execute_queries");
 
   thd.store_globals();                    // Setup current_thd and mysys_var
   thd.init();                             // Needed for error messages
+  thd.set_db(&dummy_db);
   thd.push_internal_handler(&err_handler);
   query.set_charset(thd.variables.character_set_client);
+
+  if (isatty(fileno(file->m_file)))
+  {
+    fprintf(stderr, "MariaDB syntax checker(interactive mode)\n");
+    fprintf(stderr, "Enter SQL statement followed by a semicolon(;)\n\n");
+  }
 
   while (!get_query(&thd, file, &query))
   {
