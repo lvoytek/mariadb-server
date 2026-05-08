@@ -212,7 +212,8 @@ int Field_xmltype::store(const char *from, size_t length, CHARSET_INFO *cs)
 
 err:
   get_thd()->push_warning_wrong_value(
-               Sql_condition::WARN_LEVEL_WARN, "XML", from);
+               Sql_condition::WARN_LEVEL_WARN, "XML",
+               ErrConvString(from, length, cs));
   return -1;
 }
 
