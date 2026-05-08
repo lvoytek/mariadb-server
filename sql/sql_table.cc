@@ -10913,6 +10913,7 @@ bool mysql_alter_table(THD *thd, const LEX_CSTRING *new_db,
   if (online)
   {
     table_list->lock_type= TL_READ;
+    table_list->updating = false;
   }
 
   enum_tx_isolation iso_level_initial= thd->tx_isolation;
