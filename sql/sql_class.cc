@@ -7130,7 +7130,7 @@ int THD::decide_logging_format(TABLE_LIST *tables)
         }
       }
 
-      if (tbl->updating || tbl->sequence)
+      if (tbl->updating)
       {
         bool trans;
         if (prev_write_table && prev_write_table->file->ht !=

@@ -8185,6 +8185,11 @@ TABLE_LIST *st_select_lex::add_table_to_list(THD *thd,
   if (!ptr->table_name.str)
     DBUG_RETURN(0); // EOM
 
+  if (ptr->sequence)
+  {
+    ptr->updating= true;
+  }
+
   /* check that used name is unique. Sequences are ignored */
   if (lock_type != TL_IGNORE && !ptr->sequence)
   {
